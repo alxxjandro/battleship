@@ -10,42 +10,35 @@ class Gameboard {
     const orientation = ship.orientation.toLowerCase();
     let changedCoords = [];
 
+    const rowIndex = row.charCodeAt(0) - 65; //'A' → 0
+    const colIndex = column - 1; //1-based input
+
     if (orientation === "v") {
-      const rowIndex = row.charCodeAt(0) - 65; //'A' → 0
-      const colIndex = column - 1; //1-based input
+      //starting values for a odd ship length
+      let offset = Math.floor(shipLength / 2);
+      let startRow = rowIndex - offset;
+      let endRow = rowIndex + offset;
 
-      if (shipLength % 2) {
-        //odd
-        const offset = Math.floor(shipLength / 2);
-        const startRow = rowIndex - offset;
-        const endRow = rowIndex + offset;
-
-        for (let i = startRow; i <= endRow; i++) {
-          if (!this.board[i] || !this.board[i][colIndex]) {
-            throw new Error("Ship placement out of bounds.");
-          }
-          this.board[i][colIndex].ship = true;
-          changedCoords.push([this.board[i][colIndex].row,this.board[i][colIndex].column])
-        }
-      } else if (!(shipLength % 2)){
-        //even
-        console.log("here")
-        const offset = Math.floor(shipLength / 2);
-        const startRow = rowIndex - (offset);
-        const endRow = rowIndex + (offset-1);
-
-        for (let i = startRow; i <= endRow; i++) {
-          if (!this.board[i] || !this.board[i][colIndex]) {
-            throw new Error("Ship placement out of bounds.");
-          }
-          this.board[i][colIndex].ship = true;
-          changedCoords.push([this.board[i][colIndex].row,this.board[i][colIndex].column])
-        }
+      if (!(shipLength % 2)) {
+        //if its an even length ship
+        offset = Math.floor(shipLength / 2);
+        startRow = rowIndex - offset;
+        endRow = rowIndex + (offset - 1);
       }
-
+      for (let i = startRow; i <= endRow; i++) {
+        if (!this.board[i] || !this.board[i][colIndex]) {
+          throw new Error("Ship placement out of bounds.");
+        }
+        this.board[i][colIndex].ship = true;
+        changedCoords.push([
+          this.board[i][colIndex].row,
+          this.board[i][colIndex].column,
+        ]);
+      }
+    } else if (orientation === "h") {
+      //odd
     }
     return changedCoords;
-
   }
 }
 
