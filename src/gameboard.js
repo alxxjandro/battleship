@@ -20,15 +20,14 @@ class Gameboard {
       let endRow = rowIndex + offset;
 
       if (!(shipLength % 2)) {
-        //if its an even length ship
-        offset = Math.floor(shipLength / 2);
-        startRow = rowIndex - offset;
         endRow = rowIndex + (offset - 1);
-      }
+      } //if its an even length ship
+
       for (let i = startRow; i <= endRow; i++) {
         if (!this.board[i] || !this.board[i][colIndex]) {
           throw new Error("Ship placement out of bounds.");
         }
+        if (this.board[i][colIndex].ship === true) { throw new Error("Two ship's should not overlap!")}
         this.board[i][colIndex].ship = true;
         changedCoords.push([
           this.board[i][colIndex].row,
@@ -36,7 +35,26 @@ class Gameboard {
         ]);
       }
     } else if (orientation === "h") {
-      //odd
+      //odd length ships
+      let offset = Math.floor(shipLength / 2);
+      let startColumn = colIndex - offset;
+      let endColumn = rowIndex + offset;
+
+      if (!(shipLength % 2)) {
+        endColumn = colIndex + (offset - 1);
+      } //if its an even length ship
+
+      for (let i = startColumn; i <= endColumn; i++) {
+        if (!this.board[i] || !this.board[i][colIndex]) {
+          throw new Error("Ship placement out of bounds.");
+        }
+        if (this.board[rowIndex][i].ship === true) { throw new Error("Two ship's should not overlap!")}
+        this.board[rowIndex][i].ship = true;
+        changedCoords.push([
+          this.board[rowIndex][i].row,
+          this.board[rowIndex][i].column,
+        ]);
+      }
     }
     return changedCoords;
   }

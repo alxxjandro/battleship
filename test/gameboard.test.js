@@ -33,3 +33,36 @@ test("A board should be able to place an odd length ship vertically", () => {
     ["E", 3],
   ]);
 });
+
+test("A board should be able to place an odd length ship horizontally", () => {
+  const board = new Gameboard(5);
+  const ship = new Ship(5, "h");
+  expect(board.placeShip(["C", 3], ship)).toStrictEqual([
+    ["C", 1],
+    ["C", 2],
+    ["C", 3],
+    ["C", 4],
+    ["C", 5],
+  ]);
+});
+
+test("A board should be able to place an even length ship horizontally", () => {
+  const board = new Gameboard(5);
+  const ship = new Ship(4, "h");
+  expect(board.placeShip(["C", 3], ship)).toStrictEqual([
+    ["C", 1],
+    ["C", 2],
+    ["C", 3],
+    ["C", 4]
+  ]);
+});
+
+test("Two ship's should not overlap", () => {
+  const board = new Gameboard(5);
+  const shipOne = new Ship(4, "h");
+  const shipTwo = new Ship(4, "h");
+  board.placeShip(["C", 3], shipOne)
+  expect(() => {
+    board.placeShip(["C", 3], shipTwo);
+  }).toThrow("Two ship's should not overlap!");
+});
