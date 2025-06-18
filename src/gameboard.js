@@ -27,8 +27,8 @@ class Gameboard {
         if (!this.board[i] || !this.board[i][colIndex]) {
           throw new Error("Ship placement out of bounds.");
         }
-        if (this.board[i][colIndex].ship === true) { throw new Error("Two ship's should not overlap!")}
-        this.board[i][colIndex].ship = true;
+        if (this.board[i][colIndex].ship.length != null) { throw new Error("Two ship's should not overlap!")}
+        this.board[i][colIndex].ship = ship;
         changedCoords.push([
           this.board[i][colIndex].row,
           this.board[i][colIndex].column,
@@ -48,8 +48,8 @@ class Gameboard {
         if (!this.board[i] || !this.board[i][colIndex]) {
           throw new Error("Ship placement out of bounds.");
         }
-        if (this.board[rowIndex][i].ship === true) { throw new Error("Two ship's should not overlap!")}
-        this.board[rowIndex][i].ship = true;
+        if (this.board[rowIndex][i].ship.length != null) { throw new Error("Two ship's should not overlap!")}
+        this.board[rowIndex][i].ship = ship;
         changedCoords.push([
           this.board[rowIndex][i].row,
           this.board[rowIndex][i].column,
@@ -57,6 +57,19 @@ class Gameboard {
       }
     }
     return changedCoords;
+  }
+
+  receiveAttack(coordinates){
+    let [row, column] = coordinates;
+    row = row.charCodeAt(0) - 65; //letter to index 
+    if(this.board[row][column].hit === true) {throw new Error("That tile has already been hit!")}
+
+    this.board[row][column].hit = true; //make sure the tile's now has a hit
+    if (this.board[row][column].ship != false){ //if theres a ship!
+      this.board[row][column].ship.hit()
+      return 1;
+    }
+    return 0;
   }
 }
 

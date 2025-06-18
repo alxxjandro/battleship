@@ -66,3 +66,25 @@ test("Two ship's should not overlap", () => {
     board.placeShip(["C", 3], shipTwo);
   }).toThrow("Two ship's should not overlap!");
 });
+
+// test's to see if a ships is able to recieve an attack!
+
+test("A ship can take a hit", () =>{
+  const board = new Gameboard(5);
+  const ship = new Ship(4,"h");
+  board.placeShip(["C", 3], ship)
+  expect(board.receiveAttack(["C", 3])).toBe(1);
+});
+
+test("A hit can land in water", () =>{
+  const b = new Gameboard(4);
+  expect(b.receiveAttack(["C", 3])).toBe(0);
+});
+
+test("A tile should now be able to be hit twice", () =>{
+  const b = new Gameboard(4);
+  b.receiveAttack(["C", 3]);
+  expect(() => {
+    b.receiveAttack(["C", 3]);;
+  }).toThrow("That tile has already been hit!");
+});
