@@ -2,6 +2,7 @@ class Gameboard {
   constructor(length) {
     this.board = createGrid(length);
     this.boardLength = length;
+    this.placedShips = [];
   }
 
   placeShip(coordinates, ship) {
@@ -27,7 +28,9 @@ class Gameboard {
         if (!this.board[i] || !this.board[i][colIndex]) {
           throw new Error("Ship placement out of bounds.");
         }
-        if (this.board[i][colIndex].ship.length != null) { throw new Error("Two ship's should not overlap!")}
+        if (this.board[i][colIndex].ship.length != null) {
+          throw new Error("Two ship's should not overlap!");
+        }
         this.board[i][colIndex].ship = ship;
         changedCoords.push([
           this.board[i][colIndex].row,
@@ -38,7 +41,7 @@ class Gameboard {
       //odd length ships
       let offset = Math.floor(shipLength / 2);
       let startColumn = colIndex - offset;
-      let endColumn = rowIndex + offset;
+      let endColumn = colIndex + offset;
 
       if (!(shipLength % 2)) {
         endColumn = colIndex + (offset - 1);
@@ -48,7 +51,9 @@ class Gameboard {
         if (!this.board[i] || !this.board[i][colIndex]) {
           throw new Error("Ship placement out of bounds.");
         }
-        if (this.board[rowIndex][i].ship.length != null) { throw new Error("Two ship's should not overlap!")}
+        if (this.board[rowIndex][i].ship.length != null) {
+          throw new Error("Two ship's should not overlap!");
+        }
         this.board[rowIndex][i].ship = ship;
         changedCoords.push([
           this.board[rowIndex][i].row,
@@ -56,20 +61,45 @@ class Gameboard {
         ]);
       }
     }
+    if (changedCoords != null) {
+      this.placedShips.push(ship);
+    }
     return changedCoords;
   }
 
-  receiveAttack(coordinates){
+  receiveAttack(coordinates) {
     let [row, column] = coordinates;
-    row = row.charCodeAt(0) - 65; //letter to index 
-    if(this.board[row][column].hit === true) {throw new Error("That tile has already been hit!")}
+    row = row.charCodeAt(0) - 65; //letter to index
+    column = column - 1;
 
+    if (this.board[row][column].hit === true ) { //check for hits on the tile
+      throw new Error("That tile has already been hit!");
+    }
+    
     this.board[row][column].hit = true; //make sure the tile's now has a hit
-    if (this.board[row][column].ship != false){ //if theres a ship!
-      this.board[row][column].ship.hit()
+
+    if (this.board[row][column].ship != false) { //if theres a ship, also check that it hasn't been hit!
+      this.board[row][column].ship.hit();
+      if (this.allShipsSunk()) {
+        return this.gameOver();
+      }
       return 1;
     }
     return 0;
+  }
+
+  allShipsSunk() {
+    //check if all of the ships have been sunk
+    for (let ship of this.placedShips) {
+      if (!ship.isSunk()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  gameOver() {
+    return "All of the ships on the board have been sunk!";
   }
 }
 
