@@ -115,9 +115,10 @@ test("A ship should now be able to be hit twice", () => {
 
 test("The gameboard should report if all ships are sunk!", () => {
   const board = new Gameboard(5);
-  const shipp = new Ship(2,"v");
+  const shipp = new Ship(2, "v");
   board.placeShip(["C", 3], shipp);
   board.receiveAttack(["B", 3]); // primer impacto
-  expect(board.receiveAttack(["C", 3])).toBe("All of the ships on the board have been sunk!");
+  expect(board.receiveAttack(["C", 3])).toBe(
+    "All of the ships on the board have been sunk!",
+  );
 });
-

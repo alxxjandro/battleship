@@ -66,19 +66,21 @@ class Gameboard {
     }
     return changedCoords;
   }
-
+  b;
   receiveAttack(coordinates) {
     let [row, column] = coordinates;
     row = row.charCodeAt(0) - 65; //letter to index
     column = column - 1;
 
-    if (this.board[row][column].hit === true ) { //check for hits on the tile
+    if (this.board[row][column].hit === true) {
+      //check for hits on the tile
       throw new Error("That tile has already been hit!");
     }
-    
+
     this.board[row][column].hit = true; //make sure the tile's now has a hit
 
-    if (this.board[row][column].ship != false) { //if theres a ship, also check that it hasn't been hit!
+    if (this.board[row][column].ship != false) {
+      //if theres a ship, also check that it hasn't been hit!
       this.board[row][column].ship.hit();
       if (this.allShipsSunk()) {
         return this.gameOver();
