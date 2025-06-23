@@ -1,23 +1,61 @@
 .boardContainer {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+}
+
+/* numbers */
+.columnsLegends {
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  display: flex;
+  gap: 4px;
+}
+
+/* letters */
+.rowLegends {
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* legends styles */
+.columnsLegends h3,
+.rowLegends h3 {
+  width: 30px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* class containing all the rows */
+.rows {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
   display: flex;
   flex-direction: column;
   gap: 2px;
-  width: fit-content;
-  margin: 20px;
 }
 
-.boardContainer > div {
+/* each row (rowA, rowB) */
+.rows > div {
   display: flex;
   gap: 2px;
 }
 
-.boardContainer div div {
+/* a tile */
+.rows > div > div {
   width: 30px;
   height: 30px;
   border: 1px solid #999;
   background-color: #f0f0f0;
 }
 
-.boardContainer div div.ship {
+/* ship tiles */
+.rows > div > div.ship {
   background-color: rgb(191, 246, 189);
 }

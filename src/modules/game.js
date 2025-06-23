@@ -11,7 +11,7 @@ class Game {
     const testShip = new Ship(4, "v");
     this.players[0].gameboard.placeShip(["C", 4], testShip);
     document.body.appendChild(loadBoard(this.players[0].gameboard));
-    document.body.appendChild(loadBoard(this.players[1].gameboard));
+    // document.body.appendChild(loadBoard(this.players[1].gameboard));
   }
 }
 
