@@ -59,3 +59,8 @@
 .rows > div > div.ship {
   background-color: rgb(191, 246, 189);
 }
+
+/* hit tiles */
+.rows > div > div.hit {
+  background-color: rgb(246, 189, 189);
+}

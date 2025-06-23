@@ -1,12 +1,17 @@
 // This file constains all the functions responsable for loading
 // and updating the board visible on the DOM as the game progreses
 
-const createTile = (row, column, ship) => {
+const createTile = (row, column, ship = false, hit = false) => {
   const div = document.createElement("div");
   div.className = `${row}-${column}`;
+
   if (ship) {
     div.className += ` ship`;
   }
+  if (hit) {
+    div.className += ` hit`;
+  }
+
   return div;
 };
 
@@ -20,6 +25,7 @@ const loadBoard = (gameboard) => {
   const boardContainer = Object.assign(document.createElement("div"), {
     className: "boardContainer",
   });
+
   const rowsDiv = Object.assign(document.createElement("div"), {
     className: "rows",
   });
@@ -40,7 +46,9 @@ const loadBoard = (gameboard) => {
       className: `row${rows[0].row}`,
     });
     for (let columns of rows) {
-      rowDiv.appendChild(createTile(rows[0].row, columns.column, columns.ship)); // columns.ship could be null!
+      rowDiv.appendChild(
+        createTile(rows[0].row, columns.column, columns.ship, columns.hit),
+      ); // columns.ship could be null!
     }
     rowsDiv.appendChild(rowDiv);
   }

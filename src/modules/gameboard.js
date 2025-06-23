@@ -66,7 +66,6 @@ class Gameboard {
     }
     return changedCoords;
   }
-  b;
   receiveAttack(coordinates) {
     let [row, column] = coordinates;
     row = row.charCodeAt(0) - 65; //letter to index
