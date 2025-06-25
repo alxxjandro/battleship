@@ -1,6 +1,8 @@
 // This file constains all the functions responsable for loading
 // and updating the board visible on the DOM as the game progreses
 
+import Ship from "./modules/ship";
+
 const createTile = (row, column, ship = false, hit = false) => {
   const div = document.createElement("div");
   div.className = `${row}-${column}`;
@@ -59,5 +61,22 @@ const loadBoard = (gameboard) => {
 
   return boardContainer;
 };
-
 export default loadBoard;
+
+
+// this part handles creating a mini GUI in order for the player
+// to be able to actually add ships!
+
+const loadShipsMenu = () => {
+
+}
+
+export async function loadPlayerShipsGUI(player){
+  return new Promise( (resolve) => {
+
+    const shipsCoords = [["C",1],["C",2],["B",3],["B",4],["B",6]];
+    const ships = [new Ship(5, "v"), new Ship(4, "v"), new Ship(3, "v"), new Ship(3, "v"), new Ship(2, "v")];
+    
+    resolve([shipsCoords, ships]);
+  });
+};
