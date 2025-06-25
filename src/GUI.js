@@ -68,6 +68,7 @@ export default loadBoard;
 
 export async function loadPlayerShipsGUI(player) {
   return new Promise((resolve) => {
+
     const ships = [
       new Ship(5, "v"),
       new Ship(4, "v"),
@@ -77,17 +78,17 @@ export async function loadPlayerShipsGUI(player) {
     ];
     
     const menu = document.createElement("div");
+    const carousel = createShipCarousel(ships);
     const h1 = Object.assign(document.createElement("h1"), {
       innerText: "Let's start by placing your ship's!",
     });
 
-    const carousel = createShipCarousel(ships);
-    menu.appendChild(carousel);
     const readyBtn = Object.assign(document.createElement("button"), {
       innerText: "Ready",
     });
 
     menu.appendChild(h1);
+    menu.appendChild(carousel);
     menu.appendChild(readyBtn);
     document.body.appendChild(menu);
 
@@ -99,49 +100,47 @@ export async function loadPlayerShipsGUI(player) {
 }
 
 export function createShipCarousel(ships) {
-  let currentIndex = 0;
 
+  let currentIndex = 0;
+  //main div
   const carousel = document.createElement("div");
   carousel.className = "ship-carousel";
 
-  const leftArrow = Object.assign(document.createElement("button"), {
-    className: "arrow left",
-    innerHTML: "&#8592;",
-  });
+  //arrows
+  const leftArrow = document.createElement("button");
+  leftArrow.className = "arrow left";
+  leftArrow.innerHTML = "&#8592;";
+  const rightArrow = document.createElement("button");
+  rightArrow.className = "arrow right";
+  rightArrow.innerHTML = "&#8594;";
 
-  const shipPreview = document.createElement("div");
-  shipPreview.className = "ship-preview";
-
+  //ship containers 
   const shipVisual = document.createElement("div");
   shipVisual.className = "ship";
   shipVisual.id = "ship-placeholder";
-
   const shipLabel = document.createElement("p");
   shipLabel.id = "ship-label";
 
-  shipPreview.appendChild(shipVisual);
-  shipPreview.appendChild(shipLabel);
+  //rotate btn
+  const rotateBtn = document.createElement("button");
+  rotateBtn.className = "rotate-button";
+  rotateBtn.innerText = "↻ Rotate ship";
 
-  const rightArrow = Object.assign(document.createElement("button"), {
-    className: "arrow right",
-    innerHTML: "&#8594;",
-  });
+  //container for arrows, and the ship
+  const navContainer = document.createElement("div");
+  navContainer.className = "nav-container";
+  navContainer.appendChild(leftArrow);
+  navContainer.appendChild(shipVisual);
+  navContainer.appendChild(rightArrow);
 
-  const rotateBtn = Object.assign(document.createElement("button"), {
-    className: "rotate-button",
-    innerText: "↻ Rotar barco",
-  });
-
-  // Agregar al carrusel
-  carousel.appendChild(leftArrow);
-  carousel.appendChild(shipPreview);
-  carousel.appendChild(rightArrow);
+  //main container
+  carousel.appendChild(navContainer);
+  carousel.appendChild(shipLabel);
   carousel.appendChild(rotateBtn);
 
-  // Función para renderizar el barco actual
   function renderShip(index) {
     const ship = ships[index];
-    shipVisual.innerHTML = ""; // Limpiar vista previa
+    shipVisual.innerHTML = "";
     for (let i = 0; i < ship.length; i++) {
       const cell = document.createElement("div");
       cell.style.width = "20px";
@@ -150,11 +149,9 @@ export function createShipCarousel(ships) {
       cell.style.margin = "2px";
       shipVisual.appendChild(cell);
     }
-
-    shipLabel.innerText = `Barco de ${ship.length} casillas`;
+    shipLabel.innerText = `Ship of length: ${ship.length}`;
   }
 
-  // Navegación de flechas
   leftArrow.addEventListener("click", () => {
     currentIndex = (currentIndex - 1 + ships.length) % ships.length;
     renderShip(currentIndex);
@@ -165,11 +162,13 @@ export function createShipCarousel(ships) {
     renderShip(currentIndex);
   });
 
-  // Render inicial
+  shipVisual.style.display = "flex";
+  shipVisual.style.flexDirection = "row";
+  rotateBtn.addEventListener("click", () => {
+    shipVisual.style.flexDirection = shipVisual.style.flexDirection === "column" ? "row" : "column";
+  });
+
   renderShip(currentIndex);
-
-  // Exponer índice actual si lo necesitas después
   carousel.getCurrentIndex = () => currentIndex;
-
   return carousel;
 }
