@@ -67,108 +67,78 @@ export default loadBoard;
 // to be able to actually add ships!
 
 export async function loadPlayerShipsGUI(player) {
+  let shipsCoords = [];
+  let placedShips = [];
+  const ships = [
+    new Ship(5, "v"),
+    new Ship(4, "v"),
+    new Ship(3, "v"),
+    new Ship(3, "v"),
+    new Ship(2, "v"),
+  ];
+
+  document.body.appendChild(loadBoard(player.gameboard));
+  const result = await loadShipsMenu([shipsCoords, placedShips],ships);
+  return result;
+}
+
+function loadShipsMenu(promise, ships) {
   return new Promise((resolve) => {
 
-    const ships = [
-      new Ship(5, "v"),
-      new Ship(4, "v"),
-      new Ship(3, "v"),
-      new Ship(3, "v"),
-      new Ship(2, "v"),
-    ];
-    
     const menu = document.createElement("div");
-    const carousel = createShipCarousel(ships);
-    const h1 = Object.assign(document.createElement("h1"), {
-      innerText: "Let's start by placing your ship's!",
-    });
-
+    const carrousel = createShipCarrousel(ships);
     const readyBtn = Object.assign(document.createElement("button"), {
       innerText: "Ready",
     });
 
-    menu.appendChild(h1);
-    menu.appendChild(carousel);
-    menu.appendChild(readyBtn);
+    menu.appendChild(carrousel);
+    menu.appendChild(readyBtn); //only append it when all of the boats have been put on the board
     document.body.appendChild(menu);
 
     readyBtn.addEventListener("click", () => {
-      resolve([shipsCoords, ships]);
+      resolve(promise); 
     });
-
   });
 }
 
-export function createShipCarousel(ships) {
+function createShipCarrousel(ships){
+  const carrousel = document.createElement("div");
+  carrousel.className = "carrousel";
+  const mainDiv = document.createElement("div");
 
-  let currentIndex = 0;
-  //main div
-  const carousel = document.createElement("div");
-  carousel.className = "ship-carousel";
+  const shipsDiv = Object.assign(document.createElement("div"),{
+    className: "carrouselShips"
+  });
+  const rotateBtn = Object.assign(document.createElement("button"), {
+    innerText: "Rotate",
+  });
 
-  //arrows
-  const leftArrow = document.createElement("button");
-  leftArrow.className = "arrow left";
-  leftArrow.innerHTML = "&#8592;";
-  const rightArrow = document.createElement("button");
-  rightArrow.className = "arrow right";
-  rightArrow.innerHTML = "&#8594;";
-
-  //ship containers 
-  const shipVisual = document.createElement("div");
-  shipVisual.className = "ship";
-  shipVisual.id = "ship-placeholder";
-  const shipLabel = document.createElement("p");
-  shipLabel.id = "ship-label";
-
-  //rotate btn
-  const rotateBtn = document.createElement("button");
-  rotateBtn.className = "rotate-button";
-  rotateBtn.innerText = "↻ Rotate ship";
-
-  //container for arrows, and the ship
-  const navContainer = document.createElement("div");
-  navContainer.className = "nav-container";
-  navContainer.appendChild(leftArrow);
-  navContainer.appendChild(shipVisual);
-  navContainer.appendChild(rightArrow);
-
-  //main container
-  carousel.appendChild(navContainer);
-  carousel.appendChild(shipLabel);
-  carousel.appendChild(rotateBtn);
-
-  function renderShip(index) {
-    const ship = ships[index];
-    shipVisual.innerHTML = "";
-    for (let i = 0; i < ship.length; i++) {
-      const cell = document.createElement("div");
-      cell.style.width = "20px";
-      cell.style.height = "20px";
-      cell.style.backgroundColor = "#555";
-      cell.style.margin = "2px";
-      shipVisual.appendChild(cell);
-    }
-    shipLabel.innerText = `Ship of length: ${ship.length}`;
+  for (let ship of ships){
+    shipsDiv.appendChild(createShipDiv(ship.length));
   }
 
-  leftArrow.addEventListener("click", () => {
-    currentIndex = (currentIndex - 1 + ships.length) % ships.length;
-    renderShip(currentIndex);
-  });
+  mainDiv.appendChild(shipsDiv)
+  carrousel.appendChild(mainDiv)
+  carrousel.appendChild(rotateBtn)
+  
+  console.log(shipsDiv);
+  return carrousel;
+}
 
-  rightArrow.addEventListener("click", () => {
-    currentIndex = (currentIndex + 1) % ships.length;
-    renderShip(currentIndex);
-  });
+function createShipDiv(length){
+  const shipDiv = document.createElement("div");
+  shipDiv.classList = "carrouselShip"
+  for(let i = 0; i < length; i++){
+    let tile = Object.assign(document.createElement("div"), {
+      className: "shipTile",
+    })
+    shipDiv.appendChild(tile);
+  }
 
-  shipVisual.style.display = "flex";
-  shipVisual.style.flexDirection = "row";
-  rotateBtn.addEventListener("click", () => {
-    shipVisual.style.flexDirection = shipVisual.style.flexDirection === "column" ? "row" : "column";
-  });
+  shipDiv.addEventListener("click", () =>{
+    shipDiv.classList.toggle("selected");
+    console.log(`You clicked on a ship with a legth of: ${length}`);
+  })
 
-  renderShip(currentIndex);
-  carousel.getCurrentIndex = () => currentIndex;
-  return carousel;
+  return shipDiv;
 }

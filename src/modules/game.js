@@ -10,12 +10,13 @@ class Game {
   }
 
   async start() {
-    const body = document.body;
+
     for (let player of this.players) {
-      body.appendChild(loadBoard(player.gameboard));
       const [coords, ships] = await loadPlayerShipsGUI(player);
-      loadPlayerShips(player, coords, ships);
+      console.log(coords, ships);
+      // loadPlayerShips(player, coords, ships);
     }
+
   }
 }
 
