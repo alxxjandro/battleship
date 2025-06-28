@@ -1,7 +1,7 @@
 import Player from "./player.js";
 import Ship from "./ship.js";
 import loadBoard from "../GUI.js";
-import { loadShips as loadShipsGUI } from "../GUI.js";
+import { loadShips as loadShipGUI } from "../GUI.js";
 import "../styles.css";
 
 class Game {
@@ -14,9 +14,8 @@ class Game {
     for (let player of this.players) {
       let coords = [];
       for (let length of this.defaultLengths) {
-        coords.push(await loadShipsGUI(player, length));
+        coords.push(await loadShipGUI(player, length));
       }
-      console.log(coords, ships);
     }
   }
 }

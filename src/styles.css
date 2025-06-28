@@ -78,3 +78,11 @@
 .ship {
   background-color: rgb(139, 248, 139);
 }
+
+.rotateShip {
+  display: flex;
+}
+
+.rows > div > div.tileHover {
+  background-color: rgb(219, 237, 255);
+}
