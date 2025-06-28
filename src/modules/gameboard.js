@@ -91,6 +91,9 @@ class Gameboard {
 
   allShipsSunk() {
     //check if all of the ships have been sunk
+    if (this.placedShips.length === 0) {
+      return "There are no ship's placed on the board!";
+    }
     for (let ship of this.placedShips) {
       if (!ship.isSunk()) {
         return false;

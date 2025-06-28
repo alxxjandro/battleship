@@ -3,7 +3,13 @@
 
 import Ship from "./modules/ship";
 
-const createTile = (row, column, ship = false, hit = false) => {
+const createTile = (
+  row,
+  column,
+  ship = false,
+  hit = false,
+  onClick = false,
+) => {
   const div = document.createElement("div");
   div.className = `${row}-${column}`;
 
@@ -12,6 +18,10 @@ const createTile = (row, column, ship = false, hit = false) => {
   }
   if (hit) {
     div.className += ` hit`;
+  }
+
+  if (onClick) {
+    div.addEventListener("click", onClick);
   }
 
   return div;
@@ -23,7 +33,7 @@ const createLegend = (value) => {
   return elem;
 };
 
-const loadBoard = (gameboard) => {
+const loadBoard = (gameboard, onClick) => {
   const boardContainer = Object.assign(document.createElement("div"), {
     className: "boardContainer",
   });
@@ -49,7 +59,13 @@ const loadBoard = (gameboard) => {
     });
     for (let columns of rows) {
       rowDiv.appendChild(
-        createTile(rows[0].row, columns.column, columns.ship, columns.hit),
+        createTile(
+          rows[0].row,
+          columns.column,
+          columns.ship,
+          columns.hit,
+          onClick,
+        ),
       ); // columns.ship could be null!
     }
     rowsDiv.appendChild(rowDiv);
@@ -63,13 +79,65 @@ const loadBoard = (gameboard) => {
 };
 export default loadBoard;
 
-// this part handles creating a mini GUI in order for the player
-// to be able to actually add ships!
+export async function loadShips(player, length) {
+  //this handles wether or not the ship can be places,
+  function handleClick(e) {
+    try {
+      let tile = e.target;
+      let [row, column] = tile.className.split("-");
+      let orientation = document.getElementById("rotateBtn").className;
 
-export async function loadShips(player) {
-  //get the player, show them the ships that he can place and their board
-  //one by one, hover and have a very simple UI showing the ship length and a rotate button
-  //once they place it move on to the next ship, when all of them are placed, return the promise
-  //with the coords of each ship, and then create the ships on game.js and actually appending them 
-  //to the player
+      const tempShip = new Ship(length, orientation);
+      const shipCoords = player.gameboard.placeShip([row, column], tempShip);
+      shipCoords.forEach(([row, col]) => {
+        const tile = document.querySelector(`.${row}-${col}`);
+        tile.classList.add("ship");
+      });
+    } catch (e) {
+      throw new Error(e);
+    }
+  }
+
+  return new Promise(function (resolve, reject) {
+    try {
+      const board = loadBoard(player.gameboard, handleClick);
+      document.body.appendChild(board);
+      document.body.appendChild(boatMenu(length));
+    } catch (e) {
+      reject();
+      throw new Error(e);
+    }
+  });
+}
+
+function boatMenu(boatLength) {
+  const menu = document.createElement("div");
+  const rotateBtn = document.createElement("button");
+
+  rotateBtn.innerText = "Rotate Ship";
+  rotateBtn.id = "rotateBtn";
+  rotateBtn.className = "v";
+
+  rotateBtn.addEventListener("click", () => {
+    rotateBtn.className = rotateBtn.className === "v" ? "h" : "v";
+  });
+
+  menu.appendChild(createShipVisual(boatLength));
+  menu.appendChild(rotateBtn);
+
+  return menu;
+}
+
+function createShipVisual(length) {
+  const ship = document.createElement("div");
+  ship.className = "shipDiv";
+
+  for (let i = 0; i < length; i++) {
+    ship.appendChild(
+      Object.assign(document.createElement("div"), {
+        className: "shipTile",
+      }),
+    );
+  }
+  return ship;
 }
