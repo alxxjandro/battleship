@@ -1,11 +1,11 @@
-/* This first section contains the CSS for the board only! */
+/* ========== BOARD GRID ========== */
 .boardContainer {
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr;
 }
 
-/* numbers */
+/* Column headers (1, 2, 3...) */
 .columnsLegends {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
@@ -13,7 +13,7 @@
   gap: 4px;
 }
 
-/* letters */
+/* Row headers (A, B, C...) */
 .rowLegends {
   grid-column: 1 / 2;
   grid-row: 2 / 3;
@@ -22,7 +22,7 @@
   gap: 4px;
 }
 
-/* legends styles */
+/* ========== LEGEND STYLES ========== */
 .columnsLegends h3,
 .rowLegends h3 {
   width: 30px;
@@ -33,7 +33,7 @@
   margin: 0;
 }
 
-/* class containing all the rows */
+/* ========== ROWS CONTAINER ========== */
 .rows {
   grid-column: 2 / 3;
   grid-row: 2 / 3;
@@ -42,55 +42,68 @@
   gap: 2px;
 }
 
-/* each row (rowA, rowB) */
+/* Each row (rowA, rowB...) */
 .rows > div {
   display: flex;
   gap: 2px;
 }
 
-/* a tile */
+/* ========== TILE BASE ========== */
 .rows > div > div {
   width: 30px;
   height: 30px;
   border: 1px solid #999;
   background-color: #f0f0f0;
+  transition: background-color 0.2s ease;
 }
 
-/* ship tiles */
+/* ========== SHIP TILES ========== */
 .rows > div > div.ship {
-  background-color: rgb(191, 246, 189);
+  background-color: rgb(191, 246, 189); /* visible ships (before game starts) */
 }
 
-/* hit tiles */
-.rows > div > div.hit {
-  background-color: rgb(246, 189, 189);
-}
-
-/* testing */
-
-.shipTile {
-  width: 20px;
-  height: 20px;
-  background-color: grey;
-  border: solid 1px black;
-}
-
-.ship {
-  background-color: rgb(139, 248, 139);
-}
-
-.rotateShip {
-  display: flex;
-}
-
+/* ========== TILE ON HOVER WHILE PLACING SHIP ========== */
 .rows > div > div.tileHover {
   background-color: rgb(219, 237, 255);
 }
 
+/* ========== WHEN A SHIP IS HIT ========== */
 .rows > div > div.shipHit {
-  background-color: rgb(255, 80, 80);
+  background-color: rgb(255, 80, 80); /* bright red */
+  animation: pulseRed 0.2s;
 }
 
+/* ========== WHEN WATER IS HIT ========== */
 .rows > div > div.waterHit {
-  background-color: rgb(61, 122, 182);
+  background-color: rgb(61, 122, 182); /* deep blue */
+  animation: splashBlue 0.2s;
+}
+
+/* ========== SHIP MENU UI (bottom) ========== */
+.ShipMenu {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Individual ship block in ship menu */
+.shipTile {
+  width: 20px;
+  height: 20px;
+  background-color: grey;
+  border: 1px solid black;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes pulseRed {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes splashBlue {
+  0% { opacity: 0.8; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
 }

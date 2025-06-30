@@ -14,12 +14,21 @@ const createTile = (
 ) => {
   const div = document.createElement("div");
   div.classList.add(`${row}-${column}`);
-  if (ship) div.classList.add("ship");
-  if (hit) div.classList.add("hit");
+
+  if (ship) {
+    div.classList.add("ship");
+  }
+
+  if (hit && ship) {
+    div.classList.add("shipHit");
+  } else if (hit) {
+    div.classList.add("waterHit");
+  }
 
   if (onClick) div.addEventListener("click", onClick);
   if (onHover) div.addEventListener("mouseover", onHover);
   if (onHoverLeft) div.addEventListener("mouseout", onHoverLeft);
+
   return div;
 };
 
