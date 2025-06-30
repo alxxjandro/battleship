@@ -29,7 +29,12 @@ const createLegend = (value) => {
   return elem;
 };
 
-const loadBoard = (gameboard, onClick = false, onHover = false, onHoverLeft = false) => {
+const loadBoard = (
+  gameboard,
+  onClick = false,
+  onHover = false,
+  onHoverLeft = false,
+) => {
   const boardContainer = Object.assign(document.createElement("div"), {
     className: "boardContainer",
   });
@@ -79,7 +84,6 @@ export default loadBoard;
 
 export async function loadShips(player, length) {
   return new Promise(function (resolve, reject) {
-
     function handleClick(e) {
       try {
         let tile = e.target;
@@ -235,37 +239,43 @@ function getHoverCoords(row, column, length, orientation, board) {
   return changedCoords;
 }
 
-//logic to actually let players play 
+//logic to actually let players play
 //this functions calls itselft recursively till one person wins, then it returns
 export async function playRound(p1, p2) {
   return new Promise((resolve, reject) => {
-    //base case (one player has lost) // havent made it yet 
     function handleClickAttack(e) {
       let tile = e.target;
       let [row, column] = tile.className.split("-");
-      console.log(row,column)
-      try { //to take a hit 
-        let atack = p2.gameboard.receiveAttack([row,column]);
-        console.log(atack)
-        if (atack === 1){
-          tile.classList.add("shipHit")
-          playRound(p1,p2) //let the same player take another hit
-        } else{
-          tile.classList.add("waterHit")
-          setTimeout(() =>{
-            console.log("changing boards!")
-            playRound(p2,p1);
-          },2000)
+      try {
+        let attack = p2.gameboard.receiveAttack([row, column]);
+
+        document.querySelectorAll(".rows > div > div").forEach((tile) => {
+          tile.style.pointerEvents = "none";
+        });
+
+        if (attack.result === "hit") {
+          tile.classList.add("shipHit");
+
+          if (attack.gameOver) {
+            console.log(`Player ${p1.number} wins!`);
+            resolve(true);
+            return;
+          }
+
+          setTimeout(() => resolve(false), 1000); // same player
+        } else {
+          tile.classList.add("waterHit");
+          setTimeout(() => resolve({ switchPlayers: true }), 1000);
         }
       } catch (e) {
-
+        console.error("Invalid attack:", e);
       }
     }
 
-    function hideShips(){
-      document.querySelectorAll(".ship").forEach((ship) =>{
-        ship.classList.remove("ship")
-      })
+    function hideShips() {
+      document.querySelectorAll(".ship").forEach((ship) => {
+        ship.classList.remove("ship");
+      });
     }
 
     try {
@@ -273,22 +283,21 @@ export async function playRound(p1, p2) {
       let prevMenu = document.querySelector(".ShipMenu");
       if (previousBoard) previousBoard.remove();
       if (prevMenu) prevMenu.remove();
-      
+
       let description = document.querySelector(".turnDesc");
-      if (!description){
-        description = document.body.append(Object.assign(document.createElement("h2"),{
-          innerText: `Players ${p1.number} turn, (showing player ${p2.number} board)`,
-          className: "turnDesc",
-        }))
-      } else{
+      if (!description) {
+        description = document.body.append(
+          Object.assign(document.createElement("h2"), {
+            innerText: `Players ${p1.number} turn, (showing player ${p2.number} board)`,
+            className: "turnDesc",
+          }),
+        );
+      } else {
         description.innerText = `Players ${p1.number} turn, (showing player ${p2.number} board)`;
       }
 
       //load the p2's board (p1's hitting it)
-      const board = loadBoard(
-        p2.gameboard,
-        handleClickAttack,
-      );
+      const board = loadBoard(p2.gameboard, handleClickAttack);
       document.body.append(board);
       hideShips();
     } catch (e) {
@@ -296,13 +305,3 @@ export async function playRound(p1, p2) {
     }
   });
 }
-
-/* 
-  player 1 loads his ships
-  player 2 loads his ships
-  while true function takeTurn();
-  take turn
-    loads the other player board,
-    lets use hit, if hit, reload the board with the hits, and hit again,
-    else change to the other board 
-*/

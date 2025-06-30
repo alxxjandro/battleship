@@ -68,25 +68,29 @@ class Gameboard {
   }
   receiveAttack(coordinates) {
     let [row, column] = coordinates;
-    row = row.charCodeAt(0) - 65; //letter to index
+    row = row.charCodeAt(0) - 65;
     column = column - 1;
 
-    if (this.board[row][column].hit === true) {
-      //check for hits on the tile
+    const tile = this.board[row][column];
+    if (tile.hit) {
       throw new Error("That tile has already been hit!");
     }
 
-    this.board[row][column].hit = true; //make sure the tile's now has a hit
-
-    if (this.board[row][column].ship != false) {
-      //if theres a ship, also check that it hasn't been hit!
-      this.board[row][column].ship.hit();
-      if (this.allShipsSunk()) {
-        return this.gameOver();
-      }
-      return 1;
+    tile.hit = true;
+    if (tile.ship) {
+      tile.ship.hit();
+      const sunk = tile.ship.isSunk();
+      const allSunk = this.allShipsSunk();
+      return {
+        result: "hit",
+        sunk,
+        gameOver: allSunk,
+      };
     }
-    return 0;
+
+    return {
+      result: "miss",
+    };
   }
 
   allShipsSunk() {

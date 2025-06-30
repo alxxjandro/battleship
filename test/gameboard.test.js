@@ -1,5 +1,5 @@
-import Gameboard from "../src/gameboard";
-import Ship from "../src/ship";
+import Gameboard from "../src/modules/gameboard.js";
+import Ship from "../src/modules/ship";
 
 test("A board 10x10 board as 100 tiles", () => {
   const board = new Gameboard(10);
@@ -87,12 +87,18 @@ test("A ship can take a hit", () => {
   const board = new Gameboard(5);
   const ship = new Ship(4, "h");
   board.placeShip(["C", 3], ship);
-  expect(board.receiveAttack(["C", 3])).toBe(1);
+  expect(board.receiveAttack(["C", 3])).toStrictEqual({
+    result: "hit",
+    sunk: false,
+    gameOver: false,
+  });
 });
 
 test("A hit can land in water", () => {
   const b = new Gameboard(4);
-  expect(b.receiveAttack(["C", 3])).toBe(0);
+  expect(b.receiveAttack(["C", 3])).toStrictEqual({
+    result: "miss",
+  });
 });
 
 test("A tile should now be able to be hit twice", () => {
@@ -118,7 +124,9 @@ test("The gameboard should report if all ships are sunk!", () => {
   const shipp = new Ship(2, "v");
   board.placeShip(["C", 3], shipp);
   board.receiveAttack(["B", 3]); // primer impacto
-  expect(board.receiveAttack(["C", 3])).toBe(
-    "All of the ships on the board have been sunk!",
-  );
+  expect(board.receiveAttack(["C", 3])).toStrictEqual({
+    result: "hit",
+    sunk: true,
+    gameOver: true,
+  });
 });
