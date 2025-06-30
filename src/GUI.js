@@ -239,8 +239,7 @@ function getHoverCoords(row, column, length, orientation, board) {
 //this functions calls itselft recursively till one person wins, then it returns
 export async function playRound(p1, p2) {
   return new Promise((resolve, reject) => {
-    //base case (one player has lost)
-
+    //base case (one player has lost) // havent made it yet 
     function handleClickAttack(e) {
       let tile = e.target;
       let [row, column] = tile.className.split("-");
@@ -250,11 +249,16 @@ export async function playRound(p1, p2) {
         console.log(atack)
         if (atack === 1){
           tile.classList.add("shipHit")
+          playRound(p1,p2) //let the same player take another hit
         } else{
           tile.classList.add("waterHit")
+          setTimeout(() =>{
+            console.log("changing boards!")
+            playRound(p2,p1);
+          },2000)
         }
       } catch (e) {
-        //idk
+
       }
     }
 
@@ -265,11 +269,20 @@ export async function playRound(p1, p2) {
     }
 
     try {
-      console.log(p1,p2)
       let previousBoard = document.querySelector(".boardContainer");
       let prevMenu = document.querySelector(".ShipMenu");
       if (previousBoard) previousBoard.remove();
       if (prevMenu) prevMenu.remove();
+      
+      let description = document.querySelector(".turnDesc");
+      if (!description){
+        description = document.body.append(Object.assign(document.createElement("h2"),{
+          innerText: `Players ${p1.number} turn, (showing player ${p2.number} board)`,
+          className: "turnDesc",
+        }))
+      } else{
+        description.innerText = `Players ${p1.number} turn, (showing player ${p2.number} board)`;
+      }
 
       //load the p2's board (p1's hitting it)
       const board = loadBoard(
@@ -277,17 +290,10 @@ export async function playRound(p1, p2) {
         handleClickAttack,
       );
       document.body.append(board);
-      //this is just boilerplate, need to delete it later
-      document.body.append(Object.assign(document.createElement("h1"),{
-        innerText: `Players ${p1.number} turn, (showing player ${p2.number} board)`
-      }))
       hideShips();
-      // resolve();
     } catch (e) {
       throw new Error(e);
     }
-    //invert the roles
-    // playRound(p2,p1);
   });
 }
 
