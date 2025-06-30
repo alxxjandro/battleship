@@ -5,7 +5,7 @@ import "../styles.css";
 class Game {
   constructor() {
     this.players = [new Player("user", 1), new Player("user", 2)];
-    this.defaultLengths = [1, 2]; //[5, 4, 3, 3, 2];
+    this.defaultLengths =  [5, 4, 3, 3, 2];
   }
 
   async start() {
@@ -36,16 +36,26 @@ class Game {
   }
 
   end() {
-    document.querySelectorAll(".turnDesc").forEach((el) => el.remove());
-    document.querySelectorAll(".boardContainer").forEach((el) => el.remove());
-
-    let playAgain = document.createElement("button");
-    playAgain.innerText = "Play another round!";
-    playAgain.addEventListener("click", () => {
+    // Remove all game UI
+    const main = document.querySelector('.main-container');
+    if (main) main.innerHTML = '';
+    // Remove any turnDesc
+    document.querySelectorAll('.turnDesc').forEach((el) => el.remove());
+    // Create modal
+    const modal = document.createElement('div');
+    modal.className = 'game-over-modal';
+    const box = document.createElement('div');
+    box.className = 'game-over-box';
+    box.innerHTML = `<h2>Game Over!</h2><p>Would you like to play again?</p>`;
+    const playAgain = document.createElement('button');
+    playAgain.innerText = 'Play Again';
+    playAgain.className = 'play-again-btn';
+    playAgain.addEventListener('click', () => {
       location.reload();
     });
-
-    document.body.appendChild(playAgain);
+    box.appendChild(playAgain);
+    modal.appendChild(box);
+    document.body.appendChild(modal);
   }
 }
 

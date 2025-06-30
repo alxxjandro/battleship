@@ -97,7 +97,7 @@ export async function loadShips(player, length) {
       try {
         let tile = e.target;
         let [row, column] = tile.className.split("-");
-        column = column.split(" ")[0]; //remove the hover class haha
+        column = column.split(" ")[0];
         let orientation = document.getElementById("rotateBtn").className;
         const tempShip = new Ship(length, orientation);
         const shipCoords = player.gameboard.placeShip([row, column], tempShip);
@@ -128,9 +128,7 @@ export async function loadShips(player, length) {
           const tile = document.querySelector(`.${r}-${c}`);
           if (tile) tile.classList.add("tileHover");
         });
-      } catch (err) {
-        //ignore them ajajajaj
-      }
+      } catch (err) {}
     }
 
     function onHoverLeft(e) {
@@ -138,26 +136,30 @@ export async function loadShips(player, length) {
         document.querySelectorAll(".tileHover").forEach((tile) => {
           tile.classList.remove("tileHover");
         });
-      } catch (err) {
-        // silently ignore aswell
-      }
+      } catch (err) {}
     }
 
     try {
-      let previousBoard = document.querySelector(".boardContainer");
-      let prevMenu = document.querySelector(".ShipMenu");
-      if (previousBoard) {
-        previousBoard.remove();
-        prevMenu.remove();
-      }
+      const main = document.querySelector('.main-container');
+      main.innerHTML = '';
+      // Add player heading
+      const heading = document.createElement('h2');
+      heading.className = 'turnDesc';
+      heading.innerText = `Player ${player.number}: Place your ships`;
+      main.appendChild(heading);
+      // Add instruction box
+      const instr = document.createElement("div");
+      instr.className = "placement-instructions active";
+      instr.innerHTML = `<strong>Place your ship:</strong> <span class="ship-label">${length}-tile ship</span><br><span class="placement-tip">Click a tile to place. Use <b>Rotate Ship</b> to change orientation.</span>`;
+      main.appendChild(instr);
       const board = loadBoard(
         player.gameboard,
         handleClick,
         onHover,
         onHoverLeft,
       );
-      document.body.appendChild(board);
-      document.body.appendChild(boatMenu(length));
+      main.appendChild(board);
+      main.appendChild(boatMenu(length));
     } catch (e) {
       reject(e);
     }
@@ -169,14 +171,21 @@ function boatMenu(boatLength) {
   menu.className = "ShipMenu";
   const rotateBtn = document.createElement("button");
 
-  rotateBtn.innerText = "Rotate Ship";
+  rotateBtn.innerHTML = `<span style='margin-right:6px;'>&#8635;</span>Rotate Ship`;
   rotateBtn.id = "rotateBtn";
   rotateBtn.className = "v";
+  rotateBtn.title = "Click to rotate the ship between vertical and horizontal";
 
   rotateBtn.addEventListener("click", () => {
     document.querySelector(".shipDiv").classList.toggle("rotateShip");
     rotateBtn.className = rotateBtn.className === "v" ? "h" : "v";
   });
+
+  // Add a label for the current ship
+  const shipLabel = document.createElement("span");
+  shipLabel.className = "ship-menu-label";
+  shipLabel.innerText = `${boatLength}-tile ship`;
+  menu.appendChild(shipLabel);
 
   menu.appendChild(createShipVisual(boatLength));
   menu.appendChild(rotateBtn);
@@ -257,21 +266,16 @@ export async function playRound(p1, p2) {
       let [row, column] = tile.className.split("-");
       try {
         let attack = p2.gameboard.receiveAttack([row, column]);
-
         document.querySelectorAll(".rows > div > div").forEach((tile) => {
           tile.style.pointerEvents = "none";
         });
-
         if (attack.result === "hit") {
           tile.classList.add("shipHit");
-
           if (attack.gameOver) {
-            console.log(`Player ${p1.number} wins!`);
             resolve(true);
             return;
           }
-
-          setTimeout(() => resolve(false), 1000); // same player
+          setTimeout(() => resolve(false), 1000);
         } else {
           tile.classList.add("waterHit");
           setTimeout(() => resolve({ switchPlayers: true }), 1000);
@@ -280,34 +284,25 @@ export async function playRound(p1, p2) {
         console.error("Invalid attack:", e);
       }
     }
-
     function hideShips() {
       document.querySelectorAll(".ship").forEach((ship) => {
         ship.classList.remove("ship");
       });
     }
-
     try {
-      let previousBoard = document.querySelector(".boardContainer");
-      let prevMenu = document.querySelector(".ShipMenu");
-      if (previousBoard) previousBoard.remove();
-      if (prevMenu) prevMenu.remove();
-
-      let description = document.querySelector(".turnDesc");
-      if (!description) {
-        description = document.body.append(
-          Object.assign(document.createElement("h2"), {
-            innerText: `Players ${p1.number} turn, (showing player ${p2.number} board)`,
-            className: "turnDesc",
-          }),
-        );
-      } else {
-        description.innerText = `Players ${p1.number} turn, (showing player ${p2.number} board)`;
-      }
-
-      //load the p2's board (p1's hitting it)
+      const main = document.querySelector('.main-container');
+      main.innerHTML = '';
+      // Remove placement instructions if present
+      let prevInstr = document.querySelector('.placement-instructions');
+      if (prevInstr) prevInstr.remove();
+      // Turn description
+      let description = document.createElement('h2');
+      description.className = 'turnDesc';
+      description.innerText = `Player ${p1.number} turn`;
+      main.appendChild(description);
+      // Load the p2's board (p1's hitting it)
       const board = loadBoard(p2.gameboard, handleClickAttack);
-      document.body.append(board);
+      main.appendChild(board);
       hideShips();
     } catch (e) {
       throw new Error(e);

@@ -1,8 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+/* ========== COLOR SCHEME ========== */
+:root {
+  --color-bg: #FFFBDE;
+  --color-blue-light: #91C8E4;
+  --color-blue-mid: #749BC2;
+  --color-blue-dark: #4682A9;
+  --color-accent: #B22222;
+  --color-text: #212121;
+}
+
+body {
+  background: linear-gradient(135deg, var(--color-bg) 70%, var(--color-blue-light) 100%);
+  color: var(--color-text);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+h1, h2, h3 {
+  color: var(--color-blue-dark);
+  letter-spacing: 2px;
+}
+
+button {
+  background: var(--color-blue-mid);
+  color: var(--color-text);
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+button:hover {
+  background: var(--color-blue-dark);
+  color: #fff;
+}
+
+/* Overlay/Modal styles */
+.overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(145, 200, 228, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.7s;
+}
+.menu-box {
+  background: var(--color-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(70,130,169,0.15);
+  padding: 40px 32px;
+  text-align: center;
+  min-width: 320px;
+}
+.menu-box h1 {
+  margin-bottom: 16px;
+  color: var(--color-blue-dark);
+}
+.menu-box p {
+  color: var(--color-text);
+  margin-bottom: 24px;
+}
+
 /* ========== BOARD GRID ========== */
+.main-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  width: 100vw;
+  padding-top: 24px;
+}
+
 .boardContainer {
+  margin: 24px auto 0 auto;
+  max-width: 480px;
+  box-sizing: border-box;
   display: grid;
   grid-template-columns: auto 1fr;
   grid-template-rows: auto 1fr;
+  background: var(--color-blue-light);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(70,130,169,0.08);
+  padding: 16px 32px 32px 16px;
 }
 
 /* Column headers (1, 2, 3...) */
@@ -52,47 +141,69 @@
 .rows > div > div {
   width: 30px;
   height: 30px;
-  border: 1px solid #999;
-  background-color: #f0f0f0;
-  transition: background-color 0.2s ease;
+  border: 1px solid var(--color-blue-dark);
+  background-color: var(--color-bg);
+  transition: background-color 0.2s, box-shadow 0.2s;
 }
 
 /* ========== SHIP TILES ========== */
 .rows > div > div.ship {
-  background-color: rgb(191, 246, 189); /* visible ships (before game starts) */
+  background-color: var(--color-blue-mid);
 }
 
 /* ========== TILE ON HOVER WHILE PLACING SHIP ========== */
 .rows > div > div.tileHover {
-  background-color: rgb(219, 237, 255);
+  background-color: var(--color-blue-light);
 }
 
 /* ========== WHEN A SHIP IS HIT ========== */
 .rows > div > div.shipHit {
-  background-color: rgb(255, 80, 80); /* bright red */
+  background-color: var(--color-accent);
+  color: #fff;
   animation: pulseRed 0.2s;
 }
 
 /* ========== WHEN WATER IS HIT ========== */
 .rows > div > div.waterHit {
-  background-color: rgb(61, 122, 182); /* deep blue */
+  background-color: var(--color-blue-dark);
+  color: #fff;
   animation: splashBlue 0.2s;
 }
 
 /* ========== SHIP MENU UI (bottom) ========== */
 .ShipMenu {
-  margin-top: 16px;
+  width: 100vw;
+  max-width: 600px;
+  margin: 24px auto 0 auto;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
+  gap: 32px;
+  background: var(--color-blue-light);
+  border-radius: 10px;
+  padding: 16px 24px;
+  box-shadow: 0 2px 8px rgba(70,130,169,0.08);
+  box-sizing: border-box;
 }
 
 /* Individual ship block in ship menu */
 .shipTile {
-  width: 20px;
-  height: 20px;
-  background-color: grey;
-  border: 1px solid black;
+  width: 24px;
+  height: 24px;
+  background-color: var(--color-blue-mid);
+  border: 1.5px solid var(--color-blue-dark);
+  border-radius: 4px;
+  margin-right: 4px;
+}
+
+.shipDiv {
+  display: flex;
+  flex-direction: column;
+  transition: flex-direction 0.3s;
+}
+
+.shipDiv.rotateShip {
+  flex-direction: row;
 }
 
 /* ========== ANIMATIONS ========== */
@@ -106,4 +217,150 @@
   0% { opacity: 0.8; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.1); }
   100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Ship placement instruction box */
+.placement-instructions {
+  background: var(--color-blue-light);
+  color: var(--color-text);
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(70,130,169,0.10);
+  padding: 18px 28px;
+  margin: 32px auto 0 auto;
+  max-width: 420px;
+  text-align: center;
+  font-size: 1.08rem;
+  letter-spacing: 0.2px;
+  display: none;
+  min-height: 70px;
+}
+.placement-instructions.active {
+  display: block;
+}
+.placement-instructions .ship-label {
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 1.08em;
+  margin-left: 4px;
+}
+.placement-instructions .placement-tip {
+  color: var(--color-text);
+  font-size: 1em;
+  opacity: 0.92;
+  margin-top: 6px;
+  display: block;
+}
+
+/* Ship menu label */
+.ship-menu-label {
+  background: var(--color-blue-mid);
+  color: #fff;
+  border-radius: 6px;
+  padding: 4px 12px;
+  margin-right: 18px;
+  font-size: 1em;
+  font-weight: 500;
+  letter-spacing: 1px;
+}
+
+/* Rotate button improvements */
+#rotateBtn {
+  background: var(--color-blue-dark);
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 1rem;
+  margin-left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 1px 4px rgba(70,130,169,0.10);
+}
+#rotateBtn:hover {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* Tile hover/active effects */
+.rows > div > div:hover {
+  box-shadow: 0 0 0 2px var(--color-blue-dark), 0 2px 8px rgba(70,130,169,0.10);
+  z-index: 2;
+  cursor: pointer;
+}
+.rows > div > div:active {
+  background: var(--color-blue-mid);
+}
+
+/* Title font and centering for welcome overlay */
+.game-title {
+  font-family: 'Bebas Neue', 'Oswald', Arial, sans-serif;
+  font-size: 3rem;
+  color: var(--color-blue-dark);
+  text-align: center;
+  letter-spacing: 4px;
+  margin: 0 0 12px 0;
+}
+
+/* Hide main title outside overlay */
+h1.game-title:not(.in-overlay) {
+  display: none;
+}
+
+/* Game over modal and play again button */
+.game-over-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(145, 200, 228, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  animation: fadeIn 0.7s;
+}
+.game-over-box {
+  background: var(--color-bg);
+  border-radius: 16px;
+  box-shadow: 0 4px 32px rgba(70,130,169,0.15);
+  padding: 48px 36px;
+  text-align: center;
+  min-width: 320px;
+}
+.play-again-btn {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 18px 40px;
+  font-size: 1.4rem;
+  font-family: 'Bebas Neue', 'Oswald', Arial, sans-serif;
+  margin-top: 32px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.play-again-btn:hover {
+  background: var(--color-blue-dark);
+  color: #fff;
+}
+
+/* Responsive tweaks */
+@media (max-width: 700px) {
+  .boardContainer, .ShipMenu {
+    max-width: 98vw;
+    padding: 8px;
+  }
+  .game-title {
+    font-size: 2.2rem;
+  }
+  .game-over-box {
+    min-width: 90vw;
+    padding: 24px 8px;
+  }
 }
