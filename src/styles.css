@@ -86,3 +86,11 @@
 .rows > div > div.tileHover {
   background-color: rgb(219, 237, 255);
 }
+
+.rows > div > div.shipHit {
+  background-color: rgb(255, 80, 80);
+}
+
+.rows > div > div.waterHit {
+  background-color: rgb(61, 122, 182);
+}

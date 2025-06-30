@@ -13,20 +13,13 @@ const createTile = (
   onHoverLeft,
 ) => {
   const div = document.createElement("div");
-  div.className = `${row}-${column}`;
+  div.classList.add(`${row}-${column}`);
+  if (ship) div.classList.add("ship");
+  if (hit) div.classList.add("hit");
 
-  if (ship) {
-    div.className += ` ship`;
-  }
-  if (hit) {
-    div.className += ` hit`;
-  }
-
-  if (onClick) {
-    div.addEventListener("click", onClick);
-    div.addEventListener("mouseover", onHover);
-    div.addEventListener("mouseout", onHoverLeft);
-  }
+  if (onClick) div.addEventListener("click", onClick);
+  if (onHover) div.addEventListener("mouseover", onHover);
+  if (onHoverLeft) div.addEventListener("mouseout", onHoverLeft);
   return div;
 };
 
@@ -36,7 +29,7 @@ const createLegend = (value) => {
   return elem;
 };
 
-const loadBoard = (gameboard, onClick, onHover, onHoverLeft) => {
+const loadBoard = (gameboard, onClick = false, onHover = false, onHoverLeft = false) => {
   const boardContainer = Object.assign(document.createElement("div"), {
     className: "boardContainer",
   });
@@ -86,6 +79,7 @@ export default loadBoard;
 
 export async function loadShips(player, length) {
   return new Promise(function (resolve, reject) {
+
     function handleClick(e) {
       try {
         let tile = e.target;
@@ -132,7 +126,7 @@ export async function loadShips(player, length) {
           tile.classList.remove("tileHover");
         });
       } catch (err) {
-        // silently ignore
+        // silently ignore aswell
       }
     }
 
@@ -240,3 +234,69 @@ function getHoverCoords(row, column, length, orientation, board) {
   }
   return changedCoords;
 }
+
+//logic to actually let players play 
+//this functions calls itselft recursively till one person wins, then it returns
+export async function playRound(p1, p2) {
+  return new Promise((resolve, reject) => {
+    //base case (one player has lost)
+
+    function handleClickAttack(e) {
+      let tile = e.target;
+      let [row, column] = tile.className.split("-");
+      console.log(row,column)
+      try { //to take a hit 
+        let atack = p2.gameboard.receiveAttack([row,column]);
+        console.log(atack)
+        if (atack === 1){
+          tile.classList.add("shipHit")
+        } else{
+          tile.classList.add("waterHit")
+        }
+      } catch (e) {
+        //idk
+      }
+    }
+
+    function hideShips(){
+      document.querySelectorAll(".ship").forEach((ship) =>{
+        ship.classList.remove("ship")
+      })
+    }
+
+    try {
+      console.log(p1,p2)
+      let previousBoard = document.querySelector(".boardContainer");
+      let prevMenu = document.querySelector(".ShipMenu");
+      if (previousBoard) previousBoard.remove();
+      if (prevMenu) prevMenu.remove();
+
+      //load the p2's board (p1's hitting it)
+      const board = loadBoard(
+        p2.gameboard,
+        handleClickAttack,
+      );
+      document.body.append(board);
+      //this is just boilerplate, need to delete it later
+      document.body.append(Object.assign(document.createElement("h1"),{
+        innerText: `Players ${p1.number} turn, (showing player ${p2.number} board)`
+      }))
+      hideShips();
+      // resolve();
+    } catch (e) {
+      throw new Error(e);
+    }
+    //invert the roles
+    // playRound(p2,p1);
+  });
+}
+
+/* 
+  player 1 loads his ships
+  player 2 loads his ships
+  while true function takeTurn();
+  take turn
+    loads the other player board,
+    lets use hit, if hit, reload the board with the hits, and hit again,
+    else change to the other board 
+*/
